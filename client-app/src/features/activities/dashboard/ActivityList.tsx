@@ -1,14 +1,21 @@
-import React from "react";
+import React, { SyntheticEvent, useState } from "react";
 import { Activity } from "../../../app/models/activity";
 import { Button, Item, Segment, Label } from "semantic-ui-react";
 
 interface Props {
     activities: Activity[];
-    manageSelectedActivity:(id:string)=>void;
-    deleteActivity:(id:string)=>void
+    manageSelectedActivity: (id: string) => void;
+    deleteActivity: (id: string) => void
+    submitting: boolean
 }
 
-export default function ActivityList({ deleteActivity,activities,manageSelectedActivity }: Props) {
+export default function ActivityList({ submitting, deleteActivity, activities, manageSelectedActivity }: Props) {
+    const [target, setTarget] = useState('')
+    function handleActivityDelete(e: SyntheticEvent<HTMLButtonElement>, id: string) {
+        setTarget(e.currentTarget.name);
+        deleteActivity(id)
+    }
+
     return (
         <Segment>
             <Item.Group divided>
@@ -22,8 +29,14 @@ export default function ActivityList({ deleteActivity,activities,manageSelectedA
                                 <div>{activity.city}, {activity.venue}</div>
                             </Item.Description>
                             <Item.Extra>
-                                <Button floated='right' content='View' color='blue' onClick={()=>manageSelectedActivity(activity.id) } />
-                                <Button floated='right' content='Delete' color='red' onClick={()=>deleteActivity(activity.id) } />
+                                <Button floated='right' content='View' color='blue' onClick={() => manageSelectedActivity(activity.id)} />
+                                <Button
+                                    name={activity.id}
+                                    loading={submitting && target ===activity.id}
+                                    floated='right'
+                                    content='Delete'
+                                    color='red'
+                                    onClick={(e) => handleActivityDelete(e,activity.id)} />
                                 <Label basic content={activity.category} />
                             </Item.Extra>
                         </Item.Content>
