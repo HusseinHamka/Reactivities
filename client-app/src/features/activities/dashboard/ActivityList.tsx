@@ -1,16 +1,17 @@
-import React, { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import { Activity } from "../../../app/models/activity";
 import { Button, Item, Segment, Label } from "semantic-ui-react";
+import { useStore } from "../../../app/stores/store";
 
 interface Props {
     activities: Activity[];
-    manageSelectedActivity: (id: string) => void;
     deleteActivity: (id: string) => void
     submitting: boolean
 }
 
-export default function ActivityList({ submitting, deleteActivity, activities, manageSelectedActivity }: Props) {
+export default function ActivityList({ submitting, deleteActivity, activities }: Props) {
     const [target, setTarget] = useState('')
+    const{activityStore} = useStore();
     function handleActivityDelete(e: SyntheticEvent<HTMLButtonElement>, id: string) {
         setTarget(e.currentTarget.name);
         deleteActivity(id)
@@ -29,7 +30,7 @@ export default function ActivityList({ submitting, deleteActivity, activities, m
                                 <div>{activity.city}, {activity.venue}</div>
                             </Item.Description>
                             <Item.Extra>
-                                <Button floated='right' content='View' color='blue' onClick={() => manageSelectedActivity(activity.id)} />
+                                <Button floated='right' content='View' color='blue' onClick={() => activityStore.selectActivity(activity.id)} />
                                 <Button
                                     name={activity.id}
                                     loading={submitting && target ===activity.id}
